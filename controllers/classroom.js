@@ -1,107 +1,84 @@
-const Classroom = require('../models').Classroom;
-const Student = require('../models').Student;
+const ClassroomRepo = require('../repositories/classroom-repo');
 
 module.exports = {
-  list(req, res) {
-    return Classroom
-      .findAll({
-        include: [{
-          model: Student,
-          as: 'students'
-        }],
-        order: [
-          ['createdAt', 'DESC'],
-          [{ model: Student, as: 'students' }, 'createdAt', 'DESC'],
-        ],
-      })
-      .then((classrooms) => res.status(200).send(classrooms))
-      .catch((error) => { res.status(400).send(error); });
+  async list(req, res) {
+    const result = await ClassroomRepo.findAll();
+    if (result) {
+      res.status(200).send(result)
+    } else {
+      res.status(400).send();
+    }
   },
 
-  getById(req, res) {
-    return Classroom
-      .findByPk(req.params.id, {
-        include: [{
-          model: Student,
-          as: 'students'
-        }],
-      })
-      .then((classroom) => {
-        if (!classroom) {
-          return res.status(404).send({
-            message: 'Classroom Not Found',
-          });
-        }
-        return res.status(200).send(classroom);
-      })
-      .catch((error) => {
-        console.log(error);
-        res.status(400).send(error);
-      });
+  async getById(req, res) {
+    const id = Number(req.params.id);
+    if (id) {
+      const result = await ClassroomRepo.findByPk(req.params.id);
+      if (result) {
+        res.status(200).send(result);
+      } else {
+        res.status(404).send();
+      }
+    } else {
+      res.status(400).send();
+    }
   },
 
-  add(req, res) {
-    return Classroom
-      .create({
-        class_name: req.body.class_name,
-      })
-      .then((classroom) => res.status(201).send(classroom))
-      .catch((error) => res.status(400).send(error));
+  async create(req, res) {
+    const className = req.body.class_name;
+    if (className) {
+      const result = await ClassroomRepo.create(className);
+      if (result) {
+        res.status(200).send(result);
+      } else {
+        res.status(404).send();
+      }
+    } else {
+      res.status(400).send();
+    }
   },
 
-  update(req, res) {
-    return Classroom
-      .findByPk(req.params.id, {
-        include: [{
-          model: Student,
-          as: 'students'
-        }],
-      })
-      .then(classroom => {
-        if (!classroom) {
-          return res.status(404).send({
-            message: 'Classroom Not Found',
-          });
-        }
-        return classroom
-          .update({
-            class_name: req.body.class_name || classroom.class_name,
-          })
-          .then(() => res.status(200).send(classroom))
-          .catch((error) => res.status(400).send(error));
-      })
-      .catch((error) => res.status(400).send(error));
+  async update(req, res) {
+    const id = Number(req.params.id);
+    const className = req.body.class_name;
+    if (id && className) {
+      const result = await ClassroomRepo.update(id, className);
+      if (result) {
+        res.status(200).send(result);
+      } else {
+        res.status(404).send();
+      }
+    } else {
+      res.status(400).send();
+    }
   },
 
-  delete(req, res) {
-    return Classroom
-      .findByPk(req.params.id)
-      .then(classroom => {
-        if (!classroom) {
-          return res.status(400).send({
-            message: 'Classroom Not Found',
-          });
-        }
-        return classroom
-          .destroy()
-          .then(() => res.status(204).send())
-          .catch((error) => res.status(400).send(error));
-      })
-      .catch((error) => res.status(400).send(error));
+  async delete(req, res) {
+    const id = Number(req.params.id);
+    if (id) {
+      const result = await ClassroomRepo.delete(id)
+      if (result) {
+        res.status(204).send();
+      } else {
+        res.status(404).send();
+      }
+    } else {
+      res.status(400).send();
+    }
   },
 
-  addWithStudents(req, res) {
-    return Classroom
-      .create({
-        class_name: req.body.class_name,
-        students: req.body.students,
-      }, {
-      	include: [{
-          model: Student,
-          as: 'students'
-        }]
-      })
-      .then((classroom) => res.status(201).send(classroom))
-      .catch((error) => res.status(400).send(error));
+  async addWithStudents(req, res) {
+    const students = req.body.students;
+    const className = req.body.class_name;
+    if (students && className) {
+      const result = await ClassroomRepo.addWithStudents(className, students);
+      if (result) {
+        res.status(200).send(result);
+      } else {
+        res.status(404).send();
+      }
+    } else {
+      res.status(400).send();
+    }
   },
 };
