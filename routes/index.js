@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const classroomController = require('../controllers').classroom;
 const studentController = require('../controllers').student;
+const lecturerController = require('../controllers').lecturer;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -19,5 +20,11 @@ router.get('/api/student/:id', studentController.getById);
 router.post('/api/student', studentController.add);
 router.put('/api/student/:id', studentController.update);
 router.delete('/api/student/:id', studentController.delete);
+
+router.get('/api/lecturer', lecturerController.list);
+router.get('/api/lecturer/:id', lecturerController.getById);
+router.post('/api/lecturer', lecturerController.add);
+router.put('/api/lecturer/:id', lecturerController.update);
+router.delete('/api/lecturer/:id', lecturerController.delete);
 
 module.exports = router;
