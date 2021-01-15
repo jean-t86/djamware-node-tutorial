@@ -63,4 +63,42 @@ describe('Classroom respository', function () {
       assert.deepEqual(actualOrderBy[1], expectedOrderBy);
     });
   });
+
+  describe('find by primary key', function() {
+    it('calls findByPk on sequelize model', async function() {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'findByPk', fake);
+      const id = 2;
+
+      await classroomRepo.findByPk(2);
+
+      assert.ok(fake.calledOnce);
+
+    });
+
+    it('passes the id to findByPk', async function() {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'findByPk', fake);
+      const id = 2;
+
+      await classroomRepo.findByPk(2);
+
+      assert.ok(fake.calledOnce);
+      assert.equal(fake.getCall(0).args[0], id);
+    });
+
+    it('includes students in the result', async function() {
+      const include = [{
+        model: Student,
+        as: 'students'
+      }];
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'findByPk', fake);
+      
+      await classroomRepo.findByPk(2);
+
+      assert.ok(fake.calledOnce);
+      assert.deepEqual(fake.getCall(0).args[1].include, include);
+    });
+  });
 });
