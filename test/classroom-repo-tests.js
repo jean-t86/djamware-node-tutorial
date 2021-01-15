@@ -128,4 +128,59 @@ describe('Classroom respository', function () {
       );
     });
   });
+
+  describe('update', function () {
+    it('calls findByPk to find the classroom to update', async function () {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'findByPk', fake);
+
+      await classroomRepo.update(1, "ECL3");
+
+      assert.ok(fake.calledOnce);
+    });
+
+    it('calls findByPk with id as argument', async function () {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'findByPk', fake);
+      const id = 1;
+
+      await classroomRepo.update(id, "ECL3");
+
+      assert.ok(fake.calledOnce);
+      assert.equal(fake.getCall(0).args[0], id);
+    });
+
+    it('returns null if classroom to update was not found', async function () {
+      sinon.replace(Classroom, 'findByPk', sinon.fake());
+      const result = await classroomRepo.update(1, "ECL3");
+
+      assert.equal(result, null);
+    });
+
+    it('calls update on sequelize model if classroom is found', async function () {
+      // Fake findByPk
+      const oldClassName = "ECL3";
+      const classroom = {
+        class_name: oldClassName
+      };
+      const fakeFindByPk = sinon.fake.returns(classroom);
+      sinon.replace(Classroom, 'findByPk', fakeFindByPk);
+
+      // Fake update
+      const id = 1;
+      const newClassName = "ECL1";
+      const fakeUpdate = sinon.fake();
+      sinon.replace(Classroom, 'update', fakeUpdate);
+
+      await classroomRepo.update(id, newClassName);
+
+      assert.ok(fakeUpdate.calledOnce);
+      assert.deepEqual(
+        fakeUpdate.getCall(0).args[0],
+        {
+          class_name: newClassName
+        }
+      );
+    });
+  });
 });

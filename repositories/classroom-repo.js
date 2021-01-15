@@ -42,9 +42,9 @@ class ClassroomRepo {
   async update(id, className) {
     const classroom = await this.classroomModel
       .findByPk(id);
-    let result;
+    let result = null;
     if (classroom) {
-      result = await classroom.update({
+      result = await this.classroomModel.update({
         class_name: className
       });
     }
