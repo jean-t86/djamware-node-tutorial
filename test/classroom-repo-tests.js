@@ -211,5 +211,41 @@ describe('Classroom respository', function () {
         }
       );
     });
+
+    describe('add with students', function() {
+      it('calls create on the sequelize model', async function() {
+        const fake = sinon.fake();
+        sinon.replace(Classroom, 'create', fake);
+
+        await classroomRepo.addWithStudents(
+          "ECL4",
+          [
+            {
+              student_name: "Steven"
+            },
+          ],
+        )
+
+        assert.ok(fake.calledOnce);
+      });
+    });
+
+    it('calls create with the class name and students as arguments', async function() {
+      const className = "ECL2";
+      const students = [{
+        student_name: "Bob"
+      }];
+      const arg = {
+        class_name: className,
+        students,
+      }
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'create', fake);
+
+      await classroomRepo.addWithStudents(className, students);
+
+      assert.ok(fake.calledOnce);
+      assert.deepEqual(fake.getCall(0).args[0], arg);
+    });
   });
 });
