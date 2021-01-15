@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/api/classroom', classroomController.list);
 router.get('/api/classroom/:id', classroomController.getById);
-router.post('/api/classroom', classroomController.add);
+router.post('/api/classroom', classroomController.create);
 router.put('/api/classroom/:id', classroomController.update);
 router.delete('/api/classroom/:id', classroomController.delete);
 router.post('/api/classroom/add_with_students', classroomController.addWithStudents);
