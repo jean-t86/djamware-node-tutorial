@@ -183,4 +183,33 @@ describe('Classroom respository', function () {
       );
     });
   });
+
+  describe('delete', function () {
+    it('calls destroy on the sequelize model', async function () {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'destroy', fake);
+
+      await classroomRepo.delete(1);
+
+      assert.ok(fake.calledOnce);
+    });
+
+    it('calls destroy with id as argument to a where object', async function () {
+      const id = 1;
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'destroy', fake);
+
+      await classroomRepo.delete(id);
+
+      assert.ok(fake.calledOnce);
+      assert.deepEqual(
+        fake.getCall(0).args[0],
+        {
+          where: {
+            id,
+          }
+        }
+      );
+    });
+  });
 });
