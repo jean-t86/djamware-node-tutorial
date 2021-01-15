@@ -52,7 +52,7 @@ describe('Classroom respository', function () {
     });
 
     it('orders student results by creation date in descending order', async function () {
-      const expectedOrderBy = [{ model: Student, as: 'students' },'createdAt', 'DESC'];
+      const expectedOrderBy = [{ model: Student, as: 'students' }, 'createdAt', 'DESC'];
       const fake = sinon.fake();
       sinon.replace(Classroom, 'findAll', fake);
 
@@ -64,8 +64,8 @@ describe('Classroom respository', function () {
     });
   });
 
-  describe('find by primary key', function() {
-    it('calls findByPk on sequelize model', async function() {
+  describe('find by primary key', function () {
+    it('calls findByPk on sequelize model', async function () {
       const fake = sinon.fake();
       sinon.replace(Classroom, 'findByPk', fake);
       const id = 2;
@@ -76,7 +76,7 @@ describe('Classroom respository', function () {
 
     });
 
-    it('passes the id to findByPk', async function() {
+    it('passes the id to findByPk', async function () {
       const fake = sinon.fake();
       sinon.replace(Classroom, 'findByPk', fake);
       const id = 2;
@@ -87,18 +87,45 @@ describe('Classroom respository', function () {
       assert.equal(fake.getCall(0).args[0], id);
     });
 
-    it('includes students in the result', async function() {
+    it('includes students in the result', async function () {
       const include = [{
         model: Student,
         as: 'students'
       }];
       const fake = sinon.fake();
       sinon.replace(Classroom, 'findByPk', fake);
-      
+
       await classroomRepo.findByPk(2);
 
       assert.ok(fake.calledOnce);
       assert.deepEqual(fake.getCall(0).args[1].include, include);
+    });
+  });
+
+  describe('create', function () {
+    it('calls create on sequelize model', async function () {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'create', fake);
+
+      await classroomRepo.create('');
+
+      assert.ok(fake.calledOnce);
+    });
+
+    it('calls create with class name as argument', async function () {
+      const fake = sinon.fake();
+      sinon.replace(Classroom, 'create', fake);
+      const className = 'ECL2';
+
+      await classroomRepo.create(className);
+
+      assert.ok(fake.calledOnce);
+      assert.deepEqual(
+        fake.getCall(0).args[0],
+        {
+          class_name: className
+        }
+      );
     });
   });
 });
